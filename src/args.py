@@ -91,7 +91,7 @@ def option_checker(args):
                            command=command)
     else:
         arg = str(arguments)[2:-2]
-        if arg == '-h' or arg == '--help':
+        if arg == '-h' or arg == '--help' or len(arguments) == 0:
             checker = short_checker(arg)
             (opt, functionality, text) = checker[0]()
             return print(text)
