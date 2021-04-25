@@ -1,6 +1,6 @@
 from src.lib.options_handler import short_checker
 from src.lib.connections import connect, connect_port
-from src.lib.actions.options_constructors import help_menu
+from src.lib.options.help_menu import help_text
 from src.lib.actions.key_handlers import key_copy
 from src.lib.actions.init_handler import init_handler
 
@@ -92,9 +92,7 @@ def option_checker(args):
     else:
         arg = str(arguments)[2:-2]
         if arg == '-h' or arg == '--help' or len(arguments) == 0:
-            checker = short_checker(arg)
-            (opt, functionality, text) = checker[0]()
-            return print(text)
+            return print(help_text())
         elif arg == '-init':
             return init_handler(None)
         else:
