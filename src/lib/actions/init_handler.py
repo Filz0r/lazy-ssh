@@ -84,10 +84,10 @@ Do you want to save these settings?: [y/N]''')
                 if data_loaded['known_info']['keys'] == None:
                     data_loaded['known_info']['keys'] = list()
 
-                if data_loaded['known_info']['users'] != None:
+                if data_loaded['known_info']['users'] == None:
                     data_loaded['known_info']['users'] = list()
 
-                if data_loaded['known_info']['hosts'] != None:
+                if data_loaded['known_info']['hosts'] == None:
                     data_loaded['known_info']['hosts'] = list()
 
                 data_loaded['known_info']['keys'].append(default_key)
