@@ -90,6 +90,9 @@ Do you want to save these settings?: [y/N]''')
                 if data_loaded['known_info']['hosts'] == None:
                     data_loaded['known_info']['hosts'] = list()
 
+                if data_loaded['added_hosts'] == None:
+                    data_loaded['added_hosts'] = dict()
+
                 data_loaded['known_info']['keys'].append(default_key)
                 data_loaded['known_info']['users'].append(default_user)
 
