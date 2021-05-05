@@ -1,6 +1,7 @@
 from src.config import default_range, default_user, default_key
 from src.config import hosts as hostFile
-import socket, yaml
+import socket
+import yaml
 from src.lib.utils import ip_validator, ip_check
 from src.lib.actions.connect import make_connection
 
@@ -68,6 +69,11 @@ def host_entry_builder(targets, internal_options=''):
         )
         return exit()
 
+    # if only one option is passed then convert the string into an list
+    if type(internal_options) != type(list()):
+        temp = internal_options
+        internal_options = [temp]
+    # figure out what value is used for the option
     while i < len(internal_options):
         if '-a' in internal_options[i]:
             name_index = internal_options.index('-a')
@@ -82,7 +88,10 @@ def host_entry_builder(targets, internal_options=''):
             key = targets[key_index]
             ssh_key = key
             host_to_add['key'] = True
-            host_to_add['ssh-key'] = ssh_key
+            if key == 'default':
+                host_to_add['ssh-key'] = default_key
+            else:
+                host_to_add['ssh-key'] = ssh_key
         i += 1
     try:
         ip = int(host_to_add['name'])
@@ -127,13 +136,14 @@ def host_entry_builder(targets, internal_options=''):
 
     name = host_to_add['name']
     del host_to_add['name']
-
     with open(hostFile, 'r') as stream:
         data_loaded = yaml.safe_load(stream)
         added_hosts = data_loaded['added_hosts']
         known_info = data_loaded['known_info']
+        if added_hosts == None:
+            data_loaded['added_hosts'] = dict()
         with open(hostFile, 'w') as stream:
-            added_hosts[name] = host_to_add
+            data_loaded['added_hosts'][name] = host_to_add
             if name not in known_info['hosts']:
                 known_info['hosts'].append(name)
             if host_to_add['ssh-key'] != None and host_to_add[
@@ -152,7 +162,6 @@ def host_entry_builder(targets, internal_options=''):
 
 
 def host_entry_builder_verbose(argument, ip_addr):
-    print(argument, ip_addr)
     ip = ip_addr
     ip_check = ip_validator(ip)
     if ip_check == True:
@@ -160,7 +169,8 @@ def host_entry_builder_verbose(argument, ip_addr):
         if len(hostname) < 1:
             print('You need to provide a FQDN, please try again')
             return exit()
-        if argument == None: argument = hostname.split('.')[0]
+        if argument == None:
+            argument = hostname.split('.')[0]
         username = input('Do you want to use the default user? [Y/n]')
         if username.upper() == 'Y':
             username = default_user
@@ -187,7 +197,6 @@ def host_entry_builder_verbose(argument, ip_addr):
             'key': key,
             'ssh-key': ssh_key,
         }
-        print(obj_to_add)
         with open(hostFile, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
             added_hosts = data_loaded['added_hosts']
@@ -201,8 +210,6 @@ def host_entry_builder_verbose(argument, ip_addr):
                 data_loaded['known_info']['keys'] = list()
             with open(hostFile, 'w') as stream:
                 data_loaded['added_hosts'][argument] = obj_to_add
-                print(added_hosts)
-                print(data_loaded)
                 if argument not in data_loaded['known_info']['hosts']:
                     data_loaded['known_info']['hosts'].append(argument)
 
